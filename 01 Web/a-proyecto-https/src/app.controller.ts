@@ -75,15 +75,16 @@ if ({}) {
   console.log('Falsy');
 }
 
-..............
 
 class Usuario{
   public cedula: string = '156465';
   cedula2 = '4651464'; // public : string
 
-private holaMundo():void{
+  private holaMundo():void{
     console.log("HOla")
+  }
+  holaMundo2(){
+    console.log("Hola")
   }
 }
 
-.........
