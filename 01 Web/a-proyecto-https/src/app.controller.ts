@@ -1,7 +1,15 @@
-import {Controller, Get, Post, Put, Delete, HttpCode, InternalServerErrorException} from '@nestjs/common';
+import {
+    Controller,
+    Get,
+    Post,
+    Put,
+    Delete,
+    HttpCode,
+    InternalServerErrorException,
+    Query,
+    Headers,
+    Param, Body} from '@nestjs/common';
 import {AppService} from './app.service';
-import {publicDecrypt} from 'crypto';
-
 
 @Controller('pepito')  // Segmento url -> "/"
 export class AppController {
@@ -31,7 +39,64 @@ export class AppController {
         return new Date().getSeconds();
     }
 
+    @Get('bienvenida')
+    public bienvenida(
+        @Query() parametrosDeConsulta: ObjetoBienvenida,
+        @Query('nombre') nombre: string,
+        @Query('numero') numeroUsuario: string,
+        @Query('casado') casadoUsuario: string,
+    ): string {
+        console.log (parametrosDeConsulta);
+        console.log(typeof numeroUsuario);
+        return 'Mensaje ${parametrosDeConsulta.nombre} Numero: ${parametrosDeConsulta.numero}';
+    }
+    @Get('inscripcion-curso/:idCurso/:cedula')  //     /:nombreParametro
+    public inscripcionCurso(
+    @Param() parametrosDeRuta: ObjetoInscripcion,
+    @Param('idCurso') idCurso: string,
+    @Param('cedula') cedula: string,
+    ): string{
+        console.log(parametrosDeRuta);
+        // template strings \\ 'Mensaje ${variable}'
+        return 'Te inscribiste al curso: ${parametrosDeConsulta.idCurso}';
+    }
+    @Post('almorzar')  //     /:nombreParametro
+    @HttpCode(200)
+    public almorzar(
+        @Body() parametrosDeCuerpo,
+        @Body('id') id:number, // Objeto :D Arrelo D:
+    ): string{
+        console.log(parametrosDeCuerpo)
+        return 'Te inscribiste al curso: ${parametrosDeCuerpo}';
+    }
+
+@Get('obtener-cabeceras')
+obtenerCabeceras(
+    @Headers() cabeceras,
+    @Headers('numerouno') numeroUno: string,
+){
+    console.log(cabeceras);
+    return 'Las cabeceras son: ${cabeceras}';
 }
+
+}
+
+interface ObjetoBienvenida {
+    nombre?: string;
+    numero?: string;
+    casado?: string;
+}
+
+interface ObjetoInscripcion{
+    idCurso: string;
+    cedula: string;
+}
+
+
+
+
+
+
 
 /*
 // Typescript
