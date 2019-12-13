@@ -1,4 +1,4 @@
-import {Entity, PrimaryGeneratedColumn} from "typeorm";
+import {Entity, Index, PrimaryGeneratedColumn} from "typeorm";
 
 @Entity('usuario_web')
 export class UsuarioEntity {
@@ -8,6 +8,11 @@ export class UsuarioEntity {
         name: 'id_web',
         comment: 'Identificador de la tabla usuario',
     })
-    id: number;
+    id: number
+
+    @Index( {       // Buscar Por campo
+        unique: false,
+        })
+
 }
 
