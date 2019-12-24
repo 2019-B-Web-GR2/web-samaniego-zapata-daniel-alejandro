@@ -11,6 +11,7 @@ import {UsuarioService} from "./usuario/usuario.service";
       UsuarioModule,
       TypeOrmModule.forRoot(
           {
+            name: 'default',    // Nombre cadena de conexión
             type: 'mysql',
             host: '172.31.108.148',
             port: 32771,
