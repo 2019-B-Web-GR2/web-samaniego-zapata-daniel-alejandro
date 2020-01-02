@@ -1,4 +1,5 @@
-import {Entity, Index, PrimaryGeneratedColumn} from "typeorm";
+// @ts-ignore
+import {Column, Entity, Index, PrimaryGeneratedColumn} from "typeorm";
 
 @Entity('usuario_web')
 export class UsuarioEntity {
@@ -6,13 +7,29 @@ export class UsuarioEntity {
         type: 'int',
         unsigned: true,
         name: 'id_web',
-        comment: 'Identificador de la tabla usuario',
+        comment: 'Identificador de la tabla usuario'
     })
-    id: number
+    id: number;
 
-    @Index( {       // Buscar Por campo
+    @Index({
         unique: false,
-        })
+    })
+    @Column({
+        type: 'varchar',
+        nullable: true,
+        name: 'nombre',
+        comment: 'Nombre de la tabla usuario'
+    })
+    nombre?: string;
 
+    @Index({
+        unique: true,
+    })
+    @Column({
+        type: 'varchar',
+        nullable: false,
+        name: 'cedula',
+        comment: 'Cedula de la tabla usuario'
+    })
+    cedula: string;
 }
-
