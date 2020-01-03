@@ -1,7 +1,12 @@
-import {Body, Controller, Delete, Get, Param, Post, Put, Query} from "@nestjs/common";
+import {BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Query} from "@nestjs/common";
 import {UsuarioService} from "./usuario.service";
 import {UsuarioEntity} from "./usuario.entity";
 import {DeleteResult} from "typeorm";
+import * as Joi from '@hapi/joi';
+import {UsuarioCreateDto} from "./usuario.create-dto";
+import {validate} from "class-validator";
+
+// JS const Joi = require('@hapi/joi');
 
 @Controller('usuario')
 export class UsuarioController {
@@ -24,13 +29,24 @@ export class UsuarioController {
     }
 
     @Post()
-    crearUnUsuario(
+    async crearUnUsuario(
         @Body() usuario: UsuarioEntity,
     ): Promise<UsuarioEntity> {
-        return this._usuarioService
-            .crearUno(
-                usuario
-            );
+
+        const usuarioCreateDTO = new UsuarioCreateDto();
+        usuarioCreateDTO.nombre = usuario.nombre;
+        usuarioCreateDTO.cedula = usuario.cedula;
+
+        const errores = await validate(usuarioCreateDTO);
+        if (errores.length > 0) {
+            throw new BadRequestException('Error Validando');
+        } else {
+            return this._usuarioService
+                .crearUno(
+                    usuario
+                );
+        }
+
     }
 
     @Put(':id')
@@ -56,30 +72,43 @@ export class UsuarioController {
     }
 
     @Get()
-    buscar(
+    async buscar(
         @Query('skip') skip?: string | number,
         @Query('take') take?: string | number,
         @Query('where') where?: string,
         @Query('order') order?: string,
     ): Promise<UsuarioEntity[]> {
-        if(order){
+
+        if (order) {
             try {
                 order = JSON.parse(order);
-            }catch (e) {
+            } catch (e) {
                 order = undefined;
             }
         }
-        if(where){
+        if (where) {
             try {
                 where = JSON.parse(where);
-            }catch (e) {
+            } catch (e) {
                 where = undefined;
             }
         }
-        if(skip){
+        if (skip) {
             skip = +skip;
+            // const nuevoEsquema = Joi.object({
+            //     skip: Joi.number()
+            // });
+            // try {
+            //     const objetoValidado = await nuevoEsquema
+            //         .validateAsync({
+            //             skip: skip
+            //         });
+            //     console.log('objetoValidado', objetoValidado);
+            // } catch (error) {
+            //     console.error('Error', error);
+            // }
         }
-        if(take){
+        if (take) {
             take = +take;
         }
         return this._usuarioService
