@@ -48,31 +48,31 @@ export class UsuarioService {
         // Exactamente el nombre o Exactamente la cedula
         const consultaWhere = [
             {
-                nombre: ''
+                nombre: '',
             },
             {
-                cedula: ''
-            }
+                cedula: '',
+            },
         ];
 
         // Exactamente el nombre o LIKE la cedula
         const consultaWhereLike = [
             {
-                nombre: Like('a%')
+                nombre: Like('a%'),
             },
             {
-                cedula: Like('%a')
-            }
+                cedula: Like('%a'),
+            },
         ];
 
         // id sea mayor a 20
         const consultaWhereMoreThan = {
-            id: MoreThan(20)
+            id: MoreThan(20),
         };
 
         // id sea igual a x
         const consultaWhereIgual = {
-            id: 30
+            id: 30,
         };
 
         return this._repositorioUsuario
