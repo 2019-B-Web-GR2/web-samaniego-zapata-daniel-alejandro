@@ -8,9 +8,10 @@ import {
     Post,
     Put,
     Query,
-    Req,
+    Req, Res,
     Session
 } from "@nestjs/common";
+import * as session from 'express-session';
 import {UsuarioService} from "./usuario.service";
 import {UsuarioEntity} from "./usuario.entity";
 import {DeleteResult} from "typeorm";
@@ -58,9 +59,31 @@ export class UsuarioController {
 
     @Get('sesion')
     sesion(
-        @Session() session
-    ) {
+        @Session() session,
+    ): string {
+        let contenidoHTNML = '';
+        if(session.usuario) {
+            contenidoHTNML = '<ul>';
+            session.usuario
+                .roles
+                .forEach(
+                    (nombreRol1) => {
+                        contenidoHTNML = contenidoHTNML +
+                    }
+                )
+        }
         return session;
+    }
+
+    @Get('ejemploejs')
+    ejemploejs(
+        @Res() res,
+    ) {
+        res.render('ejemplo', {       // Render forma de enviar respuestas
+            datos: {
+                nombre: 'Adrian',
+            },
+        });
     }
 
     @Get('logout')
@@ -79,8 +102,16 @@ export class UsuarioController {
 <html>
         <head> <title>EPN</title> </head>
         <body>
-        <h1> Mi primera pagina web </h1>
-</body>
+        <--! CONDICION ? SI : NO -->
+        <h1> Mi primera pagina web ${
+            session.usuario ? session.usuario.nombre : ''
+        }</h1>
+        <ul>
+            <li> Supervisor </li>
+            <li> Adiministrador </li>
+        </ul>
+        
+        </body>
 </html>`;
     }
 
