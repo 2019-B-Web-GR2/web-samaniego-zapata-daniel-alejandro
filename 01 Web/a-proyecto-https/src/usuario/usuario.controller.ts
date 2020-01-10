@@ -11,14 +11,13 @@ import {
     Req, Res,
     Session
 } from "@nestjs/common";
-import * as session from 'express-session';
-import {UsuarioService} from './usuario.service';
-import {UsuarioEntity} from './usuario.entity';
-import {DeleteResult} from 'typeorm';
+import {UsuarioService} from "./usuario.service";
+import {UsuarioEntity} from "./usuario.entity";
+import {DeleteResult} from "typeorm";
 import * as Joi from '@hapi/joi';
-import {UsuarioCreateDto} from './usuario.create-dto';
-import {validate} from 'class-validator';
-import {UsuarioUpdateDto} from './usuario.update-dto';
+import {UsuarioCreateDto} from "./usuario.create-dto";
+import {validate} from "class-validator";
+import {UsuarioUpdateDto} from "./usuario.update-dto";
 
 // JS const Joi = require('@hapi/joi');
 
@@ -31,7 +30,38 @@ export class UsuarioController {
 
     }
 
-    suma(numUno, numDOs)
+    @Get('ruta/mostrar-usuarios')
+    async rutaMostrarUsuarios(
+        @Res() res,
+    ) {
+        const usuarios = await this._usuarioService.buscar();
+        res.render(
+            'usuario/rutas/buscar-mostrar-usuario',
+            {
+                datos: {
+                    // usuarios:usuarios,
+                    usuarios,
+                },
+            },
+        );
+    }
+
+    @Get ('ejemplosejs')
+    ejemploejs(
+        @Res() res,
+    ){
+        res.render('ejemplo',{
+            datos: {
+                nombre:'Adrian',
+                suma: this.suma, //Definicion de la funcion
+                joi:Joi,
+            }
+        });
+    }
+
+    suma( numUno, numDos){
+        return numUno + numDos;
+    }
 
     @Post('login')
     login(
@@ -61,26 +91,13 @@ export class UsuarioController {
 
     @Get('sesion')
     sesion(
-        @Session() session,
+        @Session() session
     ) {
         return session;
     }
 
-    @Get('ejemploejs')
-    ejemploejs(
-        @Res() res,
-    ) {
-        res.render('ejemplo', {       // Render forma de enviar respuestas
-            datos: {
-                nombre: 'Adrian',
-                suma: this.suma,  // Definicion de la funcion
-                joi: Joi,
-            },
-        });
-    }
-
     @Get('logout')
-    logout(
+    loguot(
         @Session() session,
         @Req() req,
     ) {
@@ -105,8 +122,6 @@ export class UsuarioController {
                 );
             contenidoHTML += '</ul>';
         }
-
-
         return `
 <html>
         <head> <title>EPN</title> </head>
@@ -114,12 +129,11 @@ export class UsuarioController {
         <--! CONDICION ? SI : NO -->
         <h1> Mi primera pagina web ${
             session.usuario ? session.usuario.nombre : ''
-            }</h1>
+        }</h1>
         ${contenidoHTML}
 </body>
 </html>`;
     }
-
 
     // GET /modelo/:id
     @Get(':id')
@@ -137,12 +151,12 @@ export class UsuarioController {
         @Body() usuario: UsuarioEntity,
         @Session() session,
     ): Promise<UsuarioEntity> {
-        const administrador=session.usuario.roles.find(
+        const administrador = session.usuario.roles.find(
             rol => {
-                return rol ==='Administrador'
+                return rol === 'Administrador'
             }
         )
-        if(!administrador){
+        if (!administrador) {
             throw new BadRequestException('Error usted no cuenta con los suficientes permisos');
         }
         const usuarioCreateDTO = new UsuarioCreateDto();
