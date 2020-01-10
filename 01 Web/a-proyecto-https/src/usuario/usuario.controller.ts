@@ -60,18 +60,7 @@ export class UsuarioController {
     @Get('sesion')
     sesion(
         @Session() session,
-    ): string {
-        let contenidoHTNML = '';
-        if(session.usuario) {
-            contenidoHTNML = '<ul>';
-            session.usuario
-                .roles
-                .forEach(
-                    (nombreRol1) => {
-                        contenidoHTNML = contenidoHTNML +
-                    }
-                )
-        }
+    ) {
         return session;
     }
 
@@ -97,7 +86,23 @@ export class UsuarioController {
     }
 
     @Get('hola')
-    hola(): string {
+    hola(
+        @Session() session,
+    ): string {
+        let contenidoHTML = '';
+        if (session.usuario) {
+            contenidoHTML = '<ul>';
+            session.usuario
+                .roles
+                .forEach(
+                    (nombreRol) => {
+                        contenidoHTML = contenidoHTML + `<li>${nombreRol}</li>`;
+                    },
+                );
+            contenidoHTML += '</ul>';
+        }
+
+
         return `
 <html>
         <head> <title>EPN</title> </head>
@@ -105,13 +110,9 @@ export class UsuarioController {
         <--! CONDICION ? SI : NO -->
         <h1> Mi primera pagina web ${
             session.usuario ? session.usuario.nombre : ''
-        }</h1>
-        <ul>
-            <li> Supervisor </li>
-            <li> Adiministrador </li>
-        </ul>
-        
-        </body>
+            }</h1>
+        ${contenidoHTML}
+</body>
 </html>`;
     }
 
