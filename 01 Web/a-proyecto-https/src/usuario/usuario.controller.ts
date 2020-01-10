@@ -12,13 +12,13 @@ import {
     Session
 } from "@nestjs/common";
 import * as session from 'express-session';
-import {UsuarioService} from "./usuario.service";
-import {UsuarioEntity} from "./usuario.entity";
-import {DeleteResult} from "typeorm";
-import {UsuarioCreateDto} from "./usuario.create-dto";
-import {validate} from "class-validator";
-import {UsuarioUpdateDto} from "./usuario.update-dto";
-
+import {UsuarioService} from './usuario.service';
+import {UsuarioEntity} from './usuario.entity';
+import {DeleteResult} from 'typeorm';
+import * as Joi from '@hapi/joi';
+import {UsuarioCreateDto} from './usuario.create-dto';
+import {validate} from 'class-validator';
+import {UsuarioUpdateDto} from './usuario.update-dto';
 
 // JS const Joi = require('@hapi/joi');
 
@@ -30,6 +30,8 @@ export class UsuarioController {
     ) {
 
     }
+
+    suma(numUno, numDOs)
 
     @Post('login')
     login(
@@ -71,6 +73,8 @@ export class UsuarioController {
         res.render('ejemplo', {       // Render forma de enviar respuestas
             datos: {
                 nombre: 'Adrian',
+                suma: this.suma,  // Definicion de la funcion
+                joi: Joi,
             },
         });
     }
