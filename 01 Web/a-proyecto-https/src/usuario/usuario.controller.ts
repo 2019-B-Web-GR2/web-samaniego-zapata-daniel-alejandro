@@ -11,14 +11,13 @@ import {
     Req, Res,
     Session
 } from "@nestjs/common";
-import * as session from 'express-session';
 import {UsuarioService} from "./usuario.service";
 import {UsuarioEntity} from "./usuario.entity";
 import {DeleteResult} from "typeorm";
+import * as Joi from '@hapi/joi';
 import {UsuarioCreateDto} from "./usuario.create-dto";
 import {validate} from "class-validator";
 import {UsuarioUpdateDto} from "./usuario.update-dto";
-
 
 // JS const Joi = require('@hapi/joi');
 
@@ -31,11 +30,59 @@ export class UsuarioController {
 
     }
 
+    @Get('ruta/mostrar-usuarios')
+    async rutaMostrarUsuarios(
+        @Res() res,
+    ) {
+        const usuarios = await this._usuarioService.buscar();
+        res.render(
+            'usuario/rutas/buscar-mostrar-usuario',
+            {
+                datos: {
+                    // usuarios:usuarios -> nueva sintaxis,
+                    usuarios,
+                },
+            },
+        );
+    }
+
+    @Get('ruta/crear-usuario')
+    rutaCrearUsuario(
+        @Query('error') error: string,
+        @Res() res,
+    ) {
+        res.render(
+            'usuario/rutas/crear-usuario',
+            {
+                datos: {
+                    error,
+                },
+            },
+        );
+    }
+
+    @Get ('ejemplosejs')
+    ejemploejs(
+        @Res() res,
+    ){
+        res.render('ejemplo',{
+            datos: {
+                nombre:'Adrian',
+                suma: this.suma, //Definicion de la funcion
+                joi:Joi,
+            },
+        });
+    }
+
+    suma( numUno, numDos) {
+        return numUno + numDos;
+    }
+
     @Post('login')
     login(
         @Body('username') username: string,
         @Body('password') password: string,
-        @Session() session
+        @Session() session,
     ) {
         console.log('Session', session);
         if (username === 'adrian' && password === '1234') {
@@ -59,24 +106,13 @@ export class UsuarioController {
 
     @Get('sesion')
     sesion(
-        @Session() session,
+        @Session() session
     ) {
         return session;
     }
 
-    @Get('ejemploejs')
-    ejemploejs(
-        @Res() res,
-    ) {
-        res.render('ejemplo', {       // Render forma de enviar respuestas
-            datos: {
-                nombre: 'Adrian',
-            },
-        });
-    }
-
     @Get('logout')
-    logout(
+    loguot(
         @Session() session,
         @Req() req,
     ) {
@@ -101,8 +137,6 @@ export class UsuarioController {
                 );
             contenidoHTML += '</ul>';
         }
-
-
         return `
 <html>
         <head> <title>EPN</title> </head>
@@ -110,12 +144,11 @@ export class UsuarioController {
         <--! CONDICION ? SI : NO -->
         <h1> Mi primera pagina web ${
             session.usuario ? session.usuario.nombre : ''
-            }</h1>
+        }</h1>
         ${contenidoHTML}
 </body>
 </html>`;
     }
-
 
     // GET /modelo/:id
     @Get(':id')
@@ -131,14 +164,15 @@ export class UsuarioController {
     @Post()
     async crearUnUsuario(
         @Body() usuario: UsuarioEntity,
+        @Res() res,
         @Session() session,
     ): Promise<UsuarioEntity> {
-        const administrador=session.usuario.roles.find(
+        const administrador = session.usuario.roles.find(
             rol => {
-                return rol ==='Administrador'
-            }
+                return rol === 'Administrador'
+            },
         )
-        if(!administrador){
+        if (!administrador) {
             throw new BadRequestException('Error usted no cuenta con los suficientes permisos');
         }
         const usuarioCreateDTO = new UsuarioCreateDto();
@@ -146,15 +180,26 @@ export class UsuarioController {
         usuarioCreateDTO.cedula = usuario.cedula;
         const errores = await validate(usuarioCreateDTO);
         if (errores.length > 0) {
-            throw new BadRequestException('Error validando');
+            res.redirect(
+                '/usuario/ruta/crear-usuario?error=Error validando',
+            );
+            // throw new BadRequestException('Error validando');
         } else {
-            return this._usuarioService
-                .crearUno(
-                    usuario
+            try {
+                await this._usuarioService
+                    .crearUno(
+                        usuario,
+                    );
+                res.redirect(
+                    '/usuario/ruta/mostrar-usuarios',
                 );
+            } catch (error) {
+                console.error(error);
+                res.redirect(
+                    '/usuario/ruta/crear-usuario?mensaje=El usuario se creo correctamente',
+                );
+            }
         }
-
-
     }
 
     @Put(':id')
@@ -163,13 +208,13 @@ export class UsuarioController {
         @Param('id') id: string,
         @Session() session,
     ): Promise<UsuarioEntity> {
-        const rol=session.usuario.roles.find(
+        const rol = session.usuario.roles.find(
             rol => {
                 return (rol === 'Administrador' || rol === 'Supervisor');
-            }
+            },
         )
 
-        if(!rol){
+        if (!rol) {
             throw new BadRequestException('Error usted no cuenta con los suficientes permisos');
         }
         const usuarioUpdateDTO = new UsuarioUpdateDto();
@@ -183,7 +228,7 @@ export class UsuarioController {
             return this._usuarioService
                 .actualizarUno(
                     +id,
-                    usuario
+                    usuario,
                 );
         }
 
@@ -206,6 +251,21 @@ export class UsuarioController {
             .borrarUno(
                 +id
             );
+    }
+
+    @Post(':id')
+    async eliminarUnoPost(
+        @Param('id') id: string,
+        @Res() res,
+    ): Promise<void> {
+        try {
+            await this._usuarioService
+                .borrarUno(
+                    +id,
+                );
+        } catch (error) {
+
+        }
     }
 
     @Get()

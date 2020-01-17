@@ -1,0 +1,38 @@
+<table class="table"> <!-- table -->
+    <thead> <!-- thead -->
+    <tr> <!-- table row -->
+        <th scope="col"> <!-- table header -->
+            ID
+        </th>
+        <th scope="col">Nombre</th>
+        <th scope="col">Cedula</th>
+        <th scope="col">Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    <% usuarios.forEach( (usuario) => {%>
+        <tr> <!-- table row -->
+            <th scope="row">
+                <%= usuario.id%>
+            </th> <!-- table header -->
+            <td>
+                <%= usuario.nombre%>
+            </td> <!-- table detail -->
+            <td>
+                <%= usuario.cedula%>
+            </td> <!-- table detail -->
+            <td>
+                <button type="button"
+                        class="btn btn-info">
+                    Editar
+                </button>
+                <button type="button"
+                        class="btn btn-info">
+                    Eliminar
+                </button>
+            </td> <!-- table detail -->
+        </tr>
+    <%}); %>
+    </tbody> <!-- tbody -->
+</table>
+
