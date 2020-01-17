@@ -39,8 +39,23 @@ export class UsuarioController {
             'usuario/rutas/buscar-mostrar-usuario',
             {
                 datos: {
-                    // usuarios:usuarios,
+                    // usuarios:usuarios -> nueva sintaxis,
                     usuarios,
+                },
+            },
+        );
+    }
+
+    @Get('ruta/crear-usuario')
+    rutaCrearUsuario(
+        @Query('error') error: string,
+        @Res() res,
+    ) {
+        res.render(
+            'usuario/rutas/crear-usuario',
+            {
+                datos: {
+                    error,
                 },
             },
         );
@@ -55,11 +70,11 @@ export class UsuarioController {
                 nombre:'Adrian',
                 suma: this.suma, //Definicion de la funcion
                 joi:Joi,
-            }
+            },
         });
     }
 
-    suma( numUno, numDos){
+    suma( numUno, numDos) {
         return numUno + numDos;
     }
 
@@ -67,7 +82,7 @@ export class UsuarioController {
     login(
         @Body('username') username: string,
         @Body('password') password: string,
-        @Session() session
+        @Session() session,
     ) {
         console.log('Session', session);
         if (username === 'adrian' && password === '1234') {
@@ -149,12 +164,13 @@ export class UsuarioController {
     @Post()
     async crearUnUsuario(
         @Body() usuario: UsuarioEntity,
+        @Res() res,
         @Session() session,
     ): Promise<UsuarioEntity> {
         const administrador = session.usuario.roles.find(
             rol => {
                 return rol === 'Administrador'
-            }
+            },
         )
         if (!administrador) {
             throw new BadRequestException('Error usted no cuenta con los suficientes permisos');
@@ -164,15 +180,26 @@ export class UsuarioController {
         usuarioCreateDTO.cedula = usuario.cedula;
         const errores = await validate(usuarioCreateDTO);
         if (errores.length > 0) {
-            throw new BadRequestException('Error validando');
+            res.redirect(
+                '/usuario/ruta/crear-usuario?error=Error validando',
+            );
+            // throw new BadRequestException('Error validando');
         } else {
-            return this._usuarioService
-                .crearUno(
-                    usuario
+            try {
+                await this._usuarioService
+                    .crearUno(
+                        usuario,
+                    );
+                res.redirect(
+                    '/usuario/ruta/mostrar-usuarios',
                 );
+            } catch (error) {
+                console.error(error);
+                res.redirect(
+                    '/usuario/ruta/crear-usuario?mensaje=El usuario se creo correctamente',
+                );
+            }
         }
-
-
     }
 
     @Put(':id')
@@ -181,13 +208,13 @@ export class UsuarioController {
         @Param('id') id: string,
         @Session() session,
     ): Promise<UsuarioEntity> {
-        const rol=session.usuario.roles.find(
+        const rol = session.usuario.roles.find(
             rol => {
                 return (rol === 'Administrador' || rol === 'Supervisor');
-            }
+            },
         )
 
-        if(!rol){
+        if (!rol) {
             throw new BadRequestException('Error usted no cuenta con los suficientes permisos');
         }
         const usuarioUpdateDTO = new UsuarioUpdateDto();
@@ -201,7 +228,7 @@ export class UsuarioController {
             return this._usuarioService
                 .actualizarUno(
                     +id,
-                    usuario
+                    usuario,
                 );
         }
 
@@ -224,6 +251,21 @@ export class UsuarioController {
             .borrarUno(
                 +id
             );
+    }
+
+    @Post(':id')
+    async eliminarUnoPost(
+        @Param('id') id: string,
+        @Res() res,
+    ): Promise<void> {
+        try {
+            await this._usuarioService
+                .borrarUno(
+                    +id,
+                );
+        } catch (error) {
+
+        }
     }
 
     @Get()
