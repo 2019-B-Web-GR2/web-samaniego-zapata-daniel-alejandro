@@ -13,11 +13,11 @@ import {UsuarioService} from './usuario/usuario.service';
             {
                 name: 'default', // Nombre cadena de Conex.
                 type: 'mysql',
-                host: '172.31.108.148',
+                host: '192.168.99.100',
                 port: 32769,
-                username: 'LazaMH',
+                username: 'daniel',
                 password: '1234',
-                database: 'Prueba',
+                database: 'web',
                 dropSchema: true,
                 entities: [
                     UsuarioEntity,

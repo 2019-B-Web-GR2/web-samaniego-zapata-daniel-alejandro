@@ -166,7 +166,7 @@ export class UsuarioController {
         @Body() usuario: UsuarioEntity,
         @Res() res,
         @Session() session,
-    ): Promise<UsuarioEntity> {
+    ): Promise<void> {
         const administrador = session.usuario.roles.find(
             rol => {
                 return rol === 'Administrador'
