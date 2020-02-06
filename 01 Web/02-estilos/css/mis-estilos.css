@@ -1,0 +1,96 @@
+
+
+
+
+
+
+# titulo{
+    background-color: blue;
+}
+.rojo{
+    background-color: red;
+}
+h1{
+    background-color: green;
+}
+.rojo{
+    background-color: red;
+}
+    .tomate{
+        background-color: orange;
+    }
+        .cafe{
+            background-color: brown;
+        }
+
+.web{
+    background-color: darkblue;
+    color: white;
+}
+@media  (max-width: 992px){
+    .web{
+        background-color: black;
+        color: white;
+    }
+}
+
+@media  (max-width: 560px){
+    .web{
+        background-color: white;
+        color: black;
+    }
+}
+
+
+/* Animaciones */
+
+.animacion-web:focus{
+    background-color: black;
+}
+
+.animacion-web:hover{
+    background-color: purple;
+}
+
+.animacion-web {
+    background-color: blue;
+    color: orange;
+    animation-name: rojo-amarillo;
+    animation-duration: 4s;
+    animation-iteration-count: 2;
+    animation-delay: 3s;
+}
+/*
+@keyframes rojo-amarillo {
+    from {
+        background-color: red;
+        color: darkblue;
+    }
+    to {
+        background-color: yellow;
+        color: darkgreen;
+    }
+
+}*/
+
+@keyframes rojo-amarillo {
+    0% {
+        background-color: red;
+        color: darkblue;
+        font-size: 10px;
+    }
+    50% {
+        background-color: yellow;
+        color: darkgreen;
+        font-size: 50px;
+    }
+    100% {
+        background-color: blue;
+        color: orangered;
+        font-size: 15px;
+    }
+}
+
+.transformacion{
+    transform: rotate(20deg);
+}
